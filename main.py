@@ -7,5 +7,5 @@ def root():
     return {"message": "Hello world!"}
 
 @app.get("/method/{method}")
-def get_method(metohod):
+def get_method(method):
     return f"message {method}"
