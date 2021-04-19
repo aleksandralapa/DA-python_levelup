@@ -1,17 +1,31 @@
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI
 
 app = FastAPI()
 
+
+#zad1
 @app.get("/")
 def root_view():
-    return {"message": "Hello World"}
+    return {"message": "Hello world!"}
 
-methods = {"GET", "DELETE", "PUT", "OPTIONS"}
 
-@app.get("/method/{method}")
-def method_check(method: str, response: Response):
-    if method in methods:
-        return {"method": f"{method}"}
-    elif method == "POST":
-        response.status_code = status.HTTP_201_CREATED
-    return {"method": f"{method}"}
+#zad2
+@app.get("/method")
+def GET():
+    return {"method": "GET"}
+
+@app.delete("/method")
+def DELETE():
+    return {"method": "DELETE"}
+
+@app.put("/method")
+def PUT():
+    return {"method": "PUT"}
+
+@app.options("/method")
+def OPTIONS():
+    return {"method": "OPTIONS"}
+
+@app.post("/method", status_code = 201)
+def POST():
+    return {"method": "POST"}
