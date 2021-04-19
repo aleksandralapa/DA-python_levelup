@@ -7,5 +7,9 @@ def root():
     return {"message": "Hello world!"}
 
 @app.get("/method/{method}")
-def get_method(method):
-    return f"message {method}"
+def method_check(method: str, response: Response):
+    if method in methods:
+        return f"message: {method}"
+    else:
+        response.status_code = status.HTTP_201_CREATED
+    return f"message: {method}"
