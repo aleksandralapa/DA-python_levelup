@@ -35,8 +35,11 @@ def POST():
 #zad3
 @app.get('/auth', status_code=204)
 def password_check(response: Response, password: Optional[str] = None, password_hash: Optional[str] = None):
+    if (not password) or (not password_hash):
+        response.status_code = 401
+        return
     password = password.encode(encoding = 'UTF-8', errors = 'ignore')
     password = sha512(password.strip()).hexdigest()
-    if (password != password_hash) or (not password) or (not password_hash):
+    if password != password_hash:
         response.status_code = 401
         return
