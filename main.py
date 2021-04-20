@@ -1,9 +1,22 @@
 from fastapi import FastAPI, Response
 from hashlib import sha512
 from typing import Optional
+from pydantic import BaseModel
+from datetime import datetime, timedelta
 
 app = FastAPI()
+app.counter = 0
 
+class new_patient(BaseModel):
+    name: str
+    surname: str
+
+class old_patient(BaseModel):
+    id: int
+    name: str
+    surname: str
+    register_date: str
+    vaccination_date: str
 
 #zad1
 @app.get("/")
@@ -43,3 +56,14 @@ def password_check(response: Response, password: Optional[str] = None, password_
     if password != password_hash:
         response.status_code = 401
         return
+
+#zad4
+@app.post('/register', status_code=201)
+def registration (new: new_patient):
+    app.counter+=1
+    date = datetime.today().strftime('%Y-%m-%d')
+    old_patient.register_date = date
+    x = len(new.name) + len(new.surname)
+    date2 = datetime.today() + timedelta(days=x)
+    date2 = date2.strftime('%Y-%m-%d')
+    return old_patient (id = app.counter, name = new.name, surname = new.surname, register_date = date, vaccination_date = date2)
