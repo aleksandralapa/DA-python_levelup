@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 app.counter = 0
+app.patients = [0]
 
 class new_patient(BaseModel):
     name: str
@@ -18,13 +19,13 @@ class old_patient(BaseModel):
     register_date: str
     vaccination_date: str
 
-#zad1
+#zad1.1
 @app.get("/")
 def root_view():
     return {"message": "Hello world!"}
 
 
-#zad2
+#zad1.2
 @app.get("/method")
 def GET():
     return {"method": "GET"}
@@ -45,7 +46,7 @@ def OPTIONS():
 def POST():
     return {"method": "POST"}
 
-#zad3
+#zad1.3
 @app.get('/auth', status_code=204)
 def password_check(response: Response, password: Optional[str] = None, password_hash: Optional[str] = None):
     if (not password) or (not password_hash):
@@ -57,7 +58,7 @@ def password_check(response: Response, password: Optional[str] = None, password_
         response.status_code = 401
         return
 
-#zad4
+#zad1.4
 @app.post('/register', status_code=201)
 def registration (new: new_patient):
     app.counter+=1
@@ -66,4 +67,19 @@ def registration (new: new_patient):
     x = len(new.name) + len(new.surname)
     date2 = datetime.today() + timedelta(days=x)
     date2 = date2.strftime('%Y-%m-%d')
-    return old_patient (id = app.counter, name = new.name, surname = new.surname, register_date = date, vaccination_date = date2)
+    result = old_patient (id = app.counter, name = new.name, surname = new.surname, register_date = date, vaccination_date = date2)
+    app.patients.append(result)
+    return result
+
+#zad1.5
+@app.get('/patient/{id}', status_code=200)
+def list_patent (response: Response, id: int):
+    if id < 1:
+        response.status_code = 400
+        return
+    if id > app.counter:
+        response.status_code = 404
+        return
+    return app.patients[id]
+
+
