@@ -64,7 +64,11 @@ def registration (new: new_patient):
     app.counter+=1
     date = datetime.today().strftime('%Y-%m-%d')
     old_patient.register_date = date
-    x = len(new.name) + len(new.surname)
+    len = new.name+new.surname
+    x=0
+    for i in len:
+        if i.isalpha():
+            x=x+1
     date2 = datetime.today() + timedelta(days=x)
     date2 = date2.strftime('%Y-%m-%d')
     result = old_patient (id = app.counter, name = new.name, surname = new.surname, register_date = date, vaccination_date = date2)
