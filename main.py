@@ -73,7 +73,7 @@ def registration (new: new_patient):
 
 #zad1.5
 @app.get('/patient/{id}', status_code=200)
-def list_patent (response: Response, id: int):
+def list_patient (response: Response, id: int):
     if id < 1:
         response.status_code = 400
         return
