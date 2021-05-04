@@ -85,5 +85,13 @@ def list_patent (response: Response, id: int):
         return
     return app.patients[id]
 
+#####zajęcia 3
+
+#zad 3.1
+@app.get('/hello')
+def greatings(request: Request):
+    date = datetime.today().strftime('%Y-%m-%d')
+    return templates.TemplateResponse("hello.html.j2", {"request": request, "date": date})
+
 
 
