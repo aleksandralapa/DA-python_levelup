@@ -6,8 +6,7 @@ from datetime import datetime, timedelta
 from fastapi.templating import Jinja2Templates #wyk3
 #do pd3
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from fastapi.responses import PlainTextResponse
-from fastapi.responses import HTMLResponse
+from fastapi.responses import PlainTextResponse, HTMLResponse, RedirectResponse
 
 app = FastAPI()
 app.counter = 0
@@ -157,3 +156,31 @@ def twelcome(response: Response, token: str = '', format: str = ''):
         return HTMLResponse(content="<h1>Welcome!</h1>")
     else:
         return PlainTextResponse("Welcome!")
+    
+    #zad3.4
+@app.delete("/logout_session")
+def slogout(response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
+    if session_token != app.login_session:
+        response.status_code = 401
+        return
+    app.login_session = ''
+    return RedirectResponse(url = "/logged_out?format=" + format, status_code=303)
+
+
+@app.delete("/logout_token")
+def tlogout(response: Response, token: str = '', format: str = ''):
+    if (token == '') or (token != app.login_token):
+        response.status_code = 401
+        return
+    app.login_token = ''
+    return RedirectResponse(url = "/logged_out?format=" + format, status_code = 303) 
+
+
+@app.get("/logged_out", status_code=200)
+def logged_out(format: str = ''):
+    if format == "json":
+        return {"message": "Logged out!"}
+    elif format == "html":
+        return HTMLResponse(content="<h1>Logged out!</h1>")
+    else:
+        return PlainTextResponse("Logged out!")
