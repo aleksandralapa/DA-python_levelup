@@ -8,6 +8,7 @@ from fastapi.templating import Jinja2Templates #wyk3
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import PlainTextResponse, HTMLResponse, RedirectResponse
 import random
+random.seed(4)
 
 app = FastAPI()
 app.counter = 0
@@ -110,7 +111,8 @@ def session_authorization(response: Response, login_data: HTTPBasicCredentials =
     if login != "4dm1n" or password != 'NotSoSecurePa$$':
         response.status_code = 401
         return
-    logs = login + password + str(random.randint(0, 444))
+    x = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    logs = login + password + str(random.randint(0, 444)) + x
     session_token = logs.encode(encoding = 'UTF-8', errors = 'ignore')
     session_token = sha512(session_token.strip()).hexdigest()
     response.set_cookie(key = "session_token", value = session_token)
@@ -128,7 +130,8 @@ def token_authorization(response: Response, login_data: HTTPBasicCredentials = D
     if login != "4dm1n" or password != 'NotSoSecurePa$$':
         response.status_code = 401
         return
-    logs = login + password + str(random.randint(0, 444))
+    x = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    logs = login + password + str(random.randint(0, 444)) + x
     token_value = logs.encode(encoding = 'UTF-8', errors = 'ignore')
     token_value = sha512(token_value.strip()).hexdigest()
     if len(app.login_token) < 3:
