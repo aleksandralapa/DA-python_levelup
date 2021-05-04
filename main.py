@@ -147,7 +147,7 @@ def swelcome(response: Response, format: Optional[str] = None, session_token: st
         return PlainTextResponse("Welcome!")
 
 @app.get("/welcome_token")
-def welcome_token(response: Response, format: Optional[str] = None, session_token: Optional[str] = None):
+def twelcome(response: Response, format: Optional[str] = None, session_token: Optional[str] = None):
     if (session_token is None) or (session_token != app.login_token):
         response.status_code = 401
         return
