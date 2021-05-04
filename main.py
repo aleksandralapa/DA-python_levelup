@@ -147,8 +147,8 @@ def swelcome(response: Response, format: Optional[str] = None):
         return PlainTextResponse("Welcome!")
 
 @app.get("/welcome_token")
-def twelcome(response: Response, session_token: Optional[str] = None, format: Optional[str] = None,):
-    if (session_token is None) or (session_token != app.login_token):
+def twelcome(response: Response, token: Optional[str] = None, format: Optional[str] = None,):
+    if (token is None) or (token != app.login_token):
         response.status_code = 401
         return
     if format == "json":
