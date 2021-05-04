@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, Request
 from hashlib import sha512
 from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime, timedelta
+from fastapi.templating import Jinja2Templates #wyk3
 
 app = FastAPI()
 app.counter = 0
@@ -86,6 +87,8 @@ def list_patent (response: Response, id: int):
     return app.patients[id]
 
 #####zajęcia 3
+
+templates = Jinja2Templates(directory="templates")
 
 #zad 3.1
 @app.get('/hello')
