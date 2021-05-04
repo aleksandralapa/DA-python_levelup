@@ -134,8 +134,8 @@ def token_authorization(response: Response, login_data: HTTPBasicCredentials = D
 
 #zad3.3
 @app.get("/welcome_session")
-def swelcome(response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
-    #return app.login_session + ' and ' + session_token
+def swelcome(response: Response, format: Optional[str] = None):
+    session_token = Cookie(None)
     if session_token != app.login_session:
         response.status_code = 401
         return
@@ -147,7 +147,7 @@ def swelcome(response: Response, format: Optional[str] = None, session_token: st
         return PlainTextResponse("Welcome!")
 
 @app.get("/welcome_token")
-def twelcome(response: Response, format: Optional[str] = None, session_token: Optional[str] = None):
+def twelcome(response: Response, session_token: Optional[str] = None, format: Optional[str] = None,):
     if (session_token is None) or (session_token != app.login_token):
         response.status_code = 401
         return
