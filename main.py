@@ -1,9 +1,11 @@
-from fastapi import FastAPI, Response, Request
+from fastapi import FastAPI, Response, Request, Depends, Cookie #1;1;3;3;3
 from hashlib import sha512
 from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from fastapi.templating import Jinja2Templates #wyk3
+#do pd3
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
 app = FastAPI()
 app.counter = 0
@@ -96,5 +98,35 @@ def greatings(request: Request):
     date = datetime.today().strftime('%Y-%m-%d')
     return templates.TemplateResponse("hello.html.j2", {"request": request, "date": date})
 
+#zad 3.2
+sec = HTTPBasic()
+app.login_session = ''
+app.login_token = ''
+
+@app.post('/login_session', status_code=201)
+def session_authorization(response: Response, login_data: HTTPBasicCredentials = Depends(sec)):
+    login = login_data.username
+    password = login_data.password
+    if login != "4dm1n" or password != 'NotSoSecurePa$$':
+        response.status_code = 401
+        return
+    logs = login + password
+    session_token = logs.encode(encoding = 'UTF-8', errors = 'ignore')
+    session_token = sha512(session_token.strip()).hexdigest()
+    response.set_cookie(key = "session_token", value = session_token)
+    app.login_session = session_token
+
+@app.post('/login_token', status_code=201)
+def token_authorization(response: Response, login_data: HTTPBasicCredentials = Depends(sec)):
+    login = login_data.username
+    password = login_data.password
+    if login != "4dm1n" or password != 'NotSoSecurePa$$':
+        response.status_code = 401
+        return
+    logs = login + password
+    token_value = logs.encode(encoding = 'UTF-8', errors = 'ignore')
+    token_value = sha512(token_value.strip()).hexdigest()
+    app.login_token = token_value
+    return {"token": token_value}
 
 
