@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates #wyk3
 #do pd3
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import PlainTextResponse, HTMLResponse, RedirectResponse
+import random
 
 app = FastAPI()
 app.counter = 0
@@ -100,10 +101,8 @@ def greatings(request: Request):
     return templates.TemplateResponse("hello.html.j2", {"request": request, "date": date})
 
 #zad 3.2
-sec = HTTPBasic()
-app.login_session = ''
-app.login_token = ''
-
+app.login_token = []
+app.login_session = []
 @app.post('/login_session', status_code=201)
 def session_authorization(response: Response, login_data: HTTPBasicCredentials = Depends(sec)):
     login = login_data.username
@@ -111,11 +110,16 @@ def session_authorization(response: Response, login_data: HTTPBasicCredentials =
     if login != "4dm1n" or password != 'NotSoSecurePa$$':
         response.status_code = 401
         return
-    logs = login + password
+    logs = login + password + str(random.randint(0, 444))
     session_token = logs.encode(encoding = 'UTF-8', errors = 'ignore')
     session_token = sha512(session_token.strip()).hexdigest()
     response.set_cookie(key = "session_token", value = session_token)
-    app.login_session = session_token
+    if len(app.login_session) < 3:
+        app.login_session.append(session_token)
+    else:
+        app.login_session[0] = app.login_session[1]
+        app.login_session[1] = app.login_session[2]
+        app.login_session[2] = session_token
 
 @app.post('/login_token', status_code=201)
 def token_authorization(response: Response, login_data: HTTPBasicCredentials = Depends(sec)):
@@ -124,18 +128,22 @@ def token_authorization(response: Response, login_data: HTTPBasicCredentials = D
     if login != "4dm1n" or password != 'NotSoSecurePa$$':
         response.status_code = 401
         return
-    logs = login + password
+    logs = login + password + str(random.randint(0, 444))
     token_value = logs.encode(encoding = 'UTF-8', errors = 'ignore')
     token_value = sha512(token_value.strip()).hexdigest()
-    app.login_token = token_value
+    if len(app.login_token) < 3:
+        app.login_token.append(token_value)
+    else:
+        app.login_token[0] = app.login_token[1]
+        app.login_token[1] = app.login_token[2]
+        app.login_token[2] = token_value
     return {"token": token_value}
 
 
 #zad3.3
-#zad3.3
 @app.get("/welcome_session")
 def swelcome(response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
-    if session_token != app.login_session:
+    if session_token not in app.login_session:
         response.status_code = 401
         return
     if format == "json":
@@ -147,7 +155,7 @@ def swelcome(response: Response, format: Optional[str] = None, session_token: st
 
 @app.get("/welcome_token")
 def twelcome(response: Response, token: str = '', format: str = ''):
-    if (token == '') or (token != app.login_token):
+    if token not in app.login_token:
         response.status_code = 401
         return
     if format == "json":
@@ -156,24 +164,24 @@ def twelcome(response: Response, token: str = '', format: str = ''):
         return HTMLResponse(content="<h1>Welcome!</h1>")
     else:
         return PlainTextResponse("Welcome!")
-    
-    #zad3.4
+
+#zad3.4
 @app.delete("/logout_session")
 def slogout(response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
-    if session_token != app.login_session:
+    if session_token not in app.login_session:
         response.status_code = 401
         return
-    app.login_session = ''
-    return RedirectResponse(url = "/logged_out?format=" + format, status_code=303)
+    app.login_session.remove(session_token)
+    return RedirectResponse(url="/logged_out?format=" + format, status_code=303)
 
 
 @app.delete("/logout_token")
 def tlogout(response: Response, token: str = '', format: str = ''):
-    if (token == '') or (token != app.login_token):
+    if token not in app.login_token or token == '':
         response.status_code = 401
         return
-    app.login_token = ''
-    return RedirectResponse(url = "/logged_out?format=" + format, status_code = 303) 
+    app.login_token.remove(token)
+    return RedirectResponse(url = "/logged_out?format=" + format, status_code = 303)
 
 
 @app.get("/logged_out", status_code=200)
@@ -184,3 +192,5 @@ def logged_out(format: str = ''):
         return HTMLResponse(content="<h1>Logged out!</h1>")
     else:
         return PlainTextResponse("Logged out!")
+
+
