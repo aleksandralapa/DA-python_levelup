@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 from fastapi.templating import Jinja2Templates #wyk3
 #do pd3
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.responses import PlainTextResponse
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 app.counter = 0
@@ -130,3 +132,28 @@ def token_authorization(response: Response, login_data: HTTPBasicCredentials = D
     return {"token": token_value}
 
 
+#zad3.3
+@app.get("/welcome_session")
+def swelcome(response: Response, format: Optional[str] = None, session_token: str = Cookie(None)):
+    #return app.login_session + ' and ' + session_token
+    if session_token != app.login_session:
+        response.status_code = 401
+        return
+    if format == "json":
+        return {"message": "Welcome!"}
+    elif format == "html":
+        return HTMLResponse(content="<h1>Welcome!</h1>")
+    else:
+        return PlainTextResponse("Welcome!")
+
+@app.get("/welcome_token")
+def welcome_token(response: Response, format: Optional[str] = None, session_token: Optional[str] = None):
+    if (session_token is None) or (session_token != app.login_token):
+        response.status_code = 401
+        return
+    if format == "json":
+        return {"message": "Welcome!"}
+    elif format == "html":
+        return HTMLResponse(content="<h1>Welcome!</h1>")
+    else:
+        return PlainTextResponse("Welcome!")
