@@ -16,6 +16,9 @@ async def startup():
 async def shutdown():
     app.db_connection.close()
 
+@app.get("/")
+def root_view():
+    return {"message": "Hello world!"}
 
 @app.get('/categories')
 async def cat(response: Response):
