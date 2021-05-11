@@ -18,10 +18,12 @@ async def shutdown():
 
 
 @app.get('/categories')
-async def cat(response: Response):
-    categories = app.db_connection.execute("SELECT CategoryID, CategoryName FROM Categories ORDER BY CategoryID").fetchall()
-    response.status_code = 200
-    return {"categories": [{"id": i[0], "name": i[1]} for i in categories]}
+async def func(response: Response):
+    categories = app.db_connection.execute("SELECT CategoryName, CategoryID FROM Categories ORDER BY CategoryID").fetchall()
+    response.status_code = status.HTTP_200_OK
+    return {"categories":[
+         {'id': x[1] , 'name': f"{x[0]}"} for x in categories
+    ]}
 
 @app.get('/customers')
 async def cust(response: Response):
