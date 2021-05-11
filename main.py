@@ -200,7 +200,6 @@ def logged_out(format: str = ''):
 #----------------------------------------------#zaj 4 #----------------------------------------------#
 import sqlite3
 from fastapi import HTTPException, Query
-from fastapi.responses import HTMLResponse
 from typing import List
 
 
